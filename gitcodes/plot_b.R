@@ -2,17 +2,17 @@
 rm(list = ls(all = TRUE))  
 ###########################################
 
-setwd("Z:/Experiments_of_Maria/20191001_First_experiments")
+setwd("")
 library(plotly)
 library(data.table)
 library(dplyr)
 
-Data <- read.table("Z:/Experiments_of_Maria/20191001_First_experiments/BSA_beta.txt", quote="\"", comment.char="")
+Data <- read.table("X_beta.txt", quote="\"", comment.char="")
 colnames(Data)<-c("x","y","z","w")
-Data_pvalues <- read.table("Z:/Experiments_of_Maria/20191001_First_experiments/BSA_BHpvaluesTFCE.txt", quote="\"", comment.char="")
+Data_pvalues <- read.table("X_BHpvaluesTFCE.txt", quote="\"", comment.char="")
 colnames(Data_pvalues)<-c("x","y","z","p")
 
-endoEpi <- read.table("Z:/carloExperiments/MassUnivariatePackage/files4TFCE/LV/endo_epi.txt")
+endoEpi <- read.table("endo_epi.txt")
 vert2print <- list(which(endoEpi[,4]==0),which(endoEpi[,4]==1),1:length(endoEpi[,4]))
 
 Data <- Data[vert2print[[2]],]
@@ -39,7 +39,7 @@ p<-plot_ly(Data, x = ~x , y = ~y , z = ~z,
                          cmin = -1,
                          cmax = 1,showscale = F)) %>%
   add_markers() %>%
-  layout(title = paste("<b>Beta coefficient for WT vs BSA <b>\n average beta = ",average_beta, "and significant area = ",significance_area, "% "),
+  layout(title = paste("<b>Beta coefficient <b>\n with average beta = ",average_beta, "and significant area = ",significance_area, "% "),
          scene = list(xaxis = ax,yaxis = ax, zaxis = ax, dragmode="turntable",
                       camera = list(eye = list(x = cos(3.3)*2, y = sin(3.3)*2, z= 0.23))))%>%
  
@@ -55,6 +55,6 @@ p<-plot_ly(Data, x = ~x , y = ~y , z = ~z,
 p
 
 
-# orca(p, paste("BSA_WT"), more_args = c("-d",path_to_output ))
+ orca(p, paste("X_plot_beta"), more_args = c("-d",path_to_output ))
 
 #END

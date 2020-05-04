@@ -6,7 +6,7 @@ Created on Sun Nov 17 13:38:14 2019
 @author: mt1e16
 """
 
-#import rpy2.robjects as robjects
+import rpy2.robjects as robjects
 #import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
 import numpy as np
@@ -23,17 +23,12 @@ pandas2ri.activate()
 d = {'package.dependencies': 'package_dot_dependencies',
      'package_dependencies': 'package_uscore_dependencies'}
 
-os.chdir("Z:/Experiments_of_Maria")
-path_data = "./20191122_rtopython/data"
-#from sklearn.preprocessing import scale
-#from pandas import DataFrame
-#importing R package custom.analytics and replacing . with _ in #package names to ensure no conflicts
-
-#path = '/Users/mt1e16/Desktop/PostDoc/R_work/'
-
+os.chdir("")
+path_data = "./"
+#stats = importr('stats', robject_translations=d)
 base = importr('base', robject_translations=d)
 utils = importr('utils', robject_translations=d)
-#multtest = importr('multtest', robject_translations=d)
+multtest = importr('multtest', robject_translations=d)
 mutools3D = importr('mutools3D', robject_translations=d)
 nofCores = 48
 
@@ -41,80 +36,78 @@ nofCores = 48
 #IMAGING DATA MATRIX
 #NCOL = N POINTS ON THE ATLAS
 #NROW = N PATIENTS
-Y = base.readRDS(os.path.join(path_data,"WTedLVepi.rds"),header = True)
-#print(Y.shape)
+Y = utils.read_table("Y.txt",header = True)
+print(Y.shape)
 #DATA PRE-PROCESSING
-#Y = np.asarray(Y)
+Y = np.asarray(Y)
 Y = base.scale(Y)
 
 #CLINICAL DATA MATRIX
 #NROW = N PATIENTS
-X = base.readRDS(os.path.join(path_data,"WTedmodel.rds"),header = True)
-#del X['X']
-#X=X.as_matrix()
-print(X)
-print(X.shape)
-#NUMBER OF PERMUTATIONS
+X = utils.read_table("X.txt",header = True)
+del X['ethnicity3']
+del X['ethnicity4']
+X=np.asarray(X)
+#print(X.shape)
+
+##NUMBER OF PERMUTATIONS
 nPermutations = 1000
 ##READ THE NNLIST ASSOCIATED TO EACH VERTEX
-NNmatrix = base.readRDS(os.path.join(path_data,"redepiNNmatrix.rds"))
-#print(np.shape(NNmatrix))
+NNmatrix = base.readRDS("redepiNNmatrix.rds")
+
 ##READ AREAS ASSOCIATED TO EACH VERTEX
-A = base.readRDS(os.path.join(path_data,"epiLVareas.rds"))
+A = base.readRDS("epiLVareas.rds")
 #print(np.shape(A))
 #READ MESH COORDINATES
-meshCoordinates = pd.read_csv(os.path.join(path_data,"meshCoordinates.txt"), sep=" ", header=None)
-print(meshCoordinates.shape)
-# meshCoordinates = meshCoordinates[,-4]
+meshCoordinates = pd.read_csv("mesh_Coordinates.txt", sep=" ", header=None)
 #meshCoordinates = cbind(meshCoordinates,99999)
+
 #SPECIFY IF YOU WANT TO STUDY THE FULL SHAPE OR ONLY THE EPICARDIUM OR THE ENDOCARDIUM
 whichEE = 2
 #1 endo, 2 epi, 3 full shape
-endoEpi = pd.read_csv('./cardiac/Experiments_of_Maria/20191122_rtopython/data/endo_epi.txt', sep=" ", header=None)
+endoEpi = pd.read_csv("endo_epi.txt", sep=" ", header=None)
 #vert2print = list(which(endoEpi[,4]==0),which(endoEpi[,4]==1),1:length(endoEpi[,4]))
 
-extract = 6
+extract = 5
 #extractnames = list(X.columns) 
 # MASS UNIVARIATE REGRESSION
 result = mutools3D.murHC4m(X,Y,extract)
+#print(result)
+print(result.shape)
+
 beta = np.delete(result, np.s_[1:3], axis=1)
 #beta=bt.tolist()
 print(beta)
 #print(bt.shape)
 pv = np.delete(result, np.s_[0:2], axis=1)
 #pvals=pv.tolist()
-print(pv)
-#print(result.shape)
-#MULTIPLE TESTING CORRECTION
-#corrected = multtest.mt.rawp2adjp(result[,3], proc=c("BH"), na.rm = FALSE)
-#pvalueADJ5tsbh = array(dim = length(result[,3]))
-#BHpvalues = corrected.adjp[order(corrected.index),][,2]
-corrected = multtest.mt_rawp2adjp(FloatVector(pv), proc="BH", na_rm = False)
-#print(corrected)
-cr=corrected[0]
-ci=base.order(corrected[1])
-crdf = pd.DataFrame(cr[:,1])
-BHpvalues = np.asarray(crdf.loc[ci])
-print(BHpvalues)
-print(len(BHpvalues))
-#sign = mutools3D.permFL(X,Y,extract,A,NNmatrix,nPermutations, True, True, nofCores, E = 0.5, H = 2)
+#print(pvals)
 
-#pfdr5TSBH = multtest.mt.rawp2adjp(sign[,1], proc=c("BH"), na.rm = FALSE)
-#pvalueADJ5tsbh <- array(dim = length(sign[,1+(iEx-1)*2]))
-#BHpvaluesTFCE = pfdr5TSBH.adjp[order(pfdr5TSBH.index),][,2]
+#MULTIPLE TESTING CORRECTION
+
+corrected = multtest.mt_rawp2adjp(FloatVector(pv), proc="BH", na_rm = False)
+BHpvalues = corrected[1]
+print(BHpvalues)
+
+sign = mutools3D.permFL(X,Y,extract,A,NNmatrix,nPermutations, True, True, nofCores, E = 0.5, H = 2)
+#print(sign)
+pv2 = np.delete(sign, np.s_[1:2], axis=1)
+pfdr5TSBH = multtest.mt_rawp2adjp(FloatVector(pv2), proc="BH", na_rm = False)
+BHpvaluesTFCE = pfdr5TSBH[1]
+print(BHpvaluesTFCE)
 
 #from rpy2.robjects.packages import importr
 #plotly=robjects.r('plotly')
 #datafr=importr('data.frame')
 
 # prepare the data
+#from pandas import DataFrame
 Data = pd.concat([meshCoordinates, pd.DataFrame(beta)], axis=1)
-#Data = pd.read_csv(os.path.join(path_data,"BSA_beta.txt"), sep=" ", header=None)
 Data.columns = ["x", "y", "z", "w"]
 Data_pvalues = pd.concat([meshCoordinates, pd.DataFrame(BHpvalues)], axis=1)
-#Data_pvalues = pd.read_csv(os.path.join(path_data,"BSA_BHpvaluesTFCE.txt"), sep=" ", header=None)
 Data_pvalues.columns = ["x", "y", "z", "p"]
-
+print(Data.shape)
+print(Data_pvalues.shape)
 Data=Data[Data["w"] < 9999]
 Data_pvalues=Data_pvalues[Data_pvalues["p"] < 9999]
 
@@ -146,23 +139,27 @@ fig = go.Figure(data=[go.Scatter3d(
     mode='markers',
     marker=dict(
         size=10,cauto=False,
-        cmax=0,
-        cmin=0,
-        color='lightgrey',
+        cmax=Data["w"].max(),
+        cmin=-Data["w"].max(),
+        color=Data.w,
         colorbar=dict(
-            title="beta (a.u.)"
+            title="Beta_coefficient (a.u.)"
         ),                
-        colorscale=['#1972A4', '#FF7070'], showscale = False
+        colorscale='RdBu', showscale = True,reversescale=True
     ),showlegend=False
 )])
-
+#fig.update_layout(title='Beta coefficient', autosize=True,
+#                  scene = dict(xaxis = ax, yaxis = ax,zaxis = ax),
+#                  scene_camera_eye=dict(x=math.cos(2.8)*2, y= math.sin(2.8)*2, z=-0.25)
+#)        
+#fig.show()
 fig.add_trace(go.Scatter3d(x=df["x"], y=df["y"], z=df["z"],
                            marker=dict(size=10,cauto=False,
                                        cmax=df["w"].max(),
                                        cmin=df["w"].min(),
                                        color=df["w"],
                                        colorbar=dict(
-                                               title="beta_pvalues (a.u.)"
+                                               title="Beta_coefficient (a.u.)"
                                                ),
                                                colorscale='Reds',
                                                showscale = True,reversescale=False),
@@ -171,10 +168,12 @@ fig.add_trace(go.Scatter3d(x=df["x"], y=df["y"], z=df["z"],
     ))
                                               
 
-fig.update_layout(title='Beta coefficient for WT vs BSA', autosize=False,scene = dict(xaxis = ax, yaxis = ax,zaxis = ax),
+fig.update_layout(title='Beta coefficient', autosize=True,
+                  scene = dict(xaxis = ax, yaxis = ax,zaxis = ax),
                   scene_camera_eye=dict(x=math.cos(2.8)*2, y= math.sin(2.8)*2, z=-0.25)
 )
 fig.show()
+
 if not os.path.exists("images"):
     os.mkdir("images")
-#fig.write_image("images/BSA_beta.png")  
+fig.write_image("images/plot_beta.png")  
