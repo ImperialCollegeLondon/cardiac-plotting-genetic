@@ -25,6 +25,8 @@ The procedure is then similar to permFL.R function from the package [mutools3D](
 
 Consists of the data used in the [Mass_univaraite_analysis_UKBB](https://github.com/ImperialCollegeLondon/HCM_expressivity/blob/master/3D_regression_analysis/Mass_univariate_analysis_UKBB.R).
 
+# Produce Matices
+Save imaging and clinical matrices for each model under study
 
 # Significance testing for GENSCAN
 
