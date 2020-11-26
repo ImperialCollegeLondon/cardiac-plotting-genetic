@@ -14,9 +14,9 @@ import vtk
 import csv
 import os
 
-os.chdir("/home/mthanaj@isd.csc.mrc.ac.uk")
-path_data = "./cardiac/UKBB_40616/meshes/biobank/1350978/motion"
-path_out  = "./cardiac/Experiments_of_Maria/output_31103019_Plotmotion/1350978"
+#os.chdir("/home/mthanaj@isd.csc.mrc.ac.uk")
+path_data = "/mnt/storage/home/mthanaj/cardiac/Experiments_of_Maria/strain_analysis/predvtks_LV_endo"
+path_out  = "/mnt/storage/home/mthanaj/cardiac/Experiments_of_Maria/strain_analysis/predvtks_LV_endo"
 # debug 
 filenames = [f for f in os.listdir(path_data) if f.endswith('.vtk')]
 filenames.sort(reverse = False)
@@ -36,7 +36,7 @@ for fileIn in filenames:
     table.Update()
     writer    = vtk.vtkDelimitedTextWriter()
     writer.SetInputConnection(table.GetOutputPort())
-    writer.SetFileName(os.path.join(path_out,'RV_fr' + str(i)))
+    writer.SetFileName(os.path.join(path_out,'LVendo_fr' + str(i)+'.txt'))
     writer.Update()
     writer.Write()
     i+=1
