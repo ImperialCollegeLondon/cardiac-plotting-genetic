@@ -20,7 +20,7 @@ install.packages("igraph")
 install.packages("plyr")
 # install all packages required
 
-setwd("~/cardiac/Experiments_of_Maria/20191128_Shinyapp_interactive_phenotypic_applications/Mass_univariate_analysis/")
+setwd("~/cardiac/Experiments_of_Maria/Shinyapp/")
 library(data.table)
 library(multtest)
 library(mutools3D)
@@ -29,7 +29,7 @@ library(RcppArmadillo) # required in mulitply.cpp
 library(RcppEigen) # required in mulitply.cpp
 library(float) # required in permFL_fast
 
-func_dir<-"~/cardiac/Experiments_of_Maria/20191128_Shinyapp_interactive_phenotypic_applications/Mass_univariate_analysis/"
+func_dir<-"~/cardiac/Experiments_of_Maria/Shinyapp/"
 #folder directory of the code. Will be used for the functions as: source(paste(dir,"functions/xxx", sep="/")) 
 #in the permFL_fast function.
 
@@ -87,7 +87,7 @@ for (iS in 1:15){
 head(inputClinical)
 X <- data.matrix(inputClinical)
 X <- cbind(1, X)
-X<-X[,c(1,4:9,29)]
+X<-X[,c(1,4:9,10)]
 dim(X)
 head(X)
 
@@ -130,16 +130,16 @@ dim(Ysd)
 nPermutations=1000
 whichEE <- 3
 #1 endo, 2 epi, 3 full shape
-endoEpi <- read.table("~/cardiac/Experiments_of_Maria/20191024_ShinyApp/shinyplot/endo_epi.txt")
+endoEpi <- read.table("~/cardiac/Experiments_of_Maria/ShinyApp/data_3d/endo_epi.txt")
 vert2print <- list(which(endoEpi[,4]==0),which(endoEpi[,4]==1),1:length(endoEpi[,4]))
 Ywd<-Ywd[,vert2print[[whichEE]]]
 Ysd<-Ysd[,vert2print[[whichEE]]]
 
 
 ##READ THE NNLIST ASSOCIATED TO EACH VERTEX
-NNmatrix <- readRDS("~/cardiac/Experiments_of_Maria/20191024_ShinyApp/shinyplot/redNNmatrix.rds")
+NNmatrix <- readRDS("~/cardiac/Experiments_of_Maria/ShinyApp/data_3d/redNNmatrix.rds")
 ##READ AREAS ASSOCIATED TO EACH VERTEX
-A <- readRDS("~/cardiac/Experiments_of_Maria/20191024_ShinyApp/shinyplot/LVarea.rds")
+A <- readRDS("~/cardiac/Experiments_of_Maria/ShinyApp/data_3d/LVarea.rds")
 
 ## Produce a new mean of meshCoordinates
 
@@ -156,7 +156,7 @@ A <- readRDS("~/cardiac/Experiments_of_Maria/20191024_ShinyApp/shinyplot/LVarea.
 
 ## or use the meshCoordinates from the mean of 27k
 mesh_Coordinates <- read.table("data_3d/Old_data/meshCoordinates.txt", quote="\"", comment.char="")
-setwd("~/cardiac/Experiments_of_Maria/20191128_Shinyapp_interactive_phenotypic_applications/All_3D")
+setwd("~/cardiac/Experiments_of_Maria/ShinyApp/CardiacExplorer/27k/Pulse_rate")
 
 extractNames <- colnames(X)
 extract=7

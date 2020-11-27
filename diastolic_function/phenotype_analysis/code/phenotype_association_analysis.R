@@ -1,8 +1,13 @@
 
 install.packages("data.table")
+install.packages("glmnet")
+install.packages("BeSS")
+install.packages("mctest")
 
 library(data.table)
-
+library(BeSS)
+library(mctest)
+library(glmnet)
 # load data for multiple linear regression analysis
 multidata <- read.table("multiple_datatable.txt", header = TRUE)
 
@@ -33,30 +38,45 @@ rownames(beta_ml)<-colnames(multidata)[1:11]
 
 ### Multivariate LASSO regresion analysis with stability selection for selecting the non-imaging phenotypes 
 
-install.packages("glmnet")
-install.packages("stabs")
 
 data_pheno <- read.table("pheno_datatable.txt", header = TRUE)# load only imaging phenotype data
 
-# stabsel
+data_ebic<-as.matrix(data_pheno)
 
-library(stabs)
+# using GPDAS algorithm to select the optimal k
+# PDSRll
+fit.seqll <- bess(data_ebic[,-18], data_ebic[,18], method="sequential", epsilon = 0)
+# PDSRrr
+fit.seqrr <- bess(data_ebic[,-19], data_ebic[,19], method="sequential", epsilon = 0)
+# LAVmaxi
+fit.seqlav <- bess(data_ebic[,-34], data_ebic[,34], method="sequential", epsilon = 0)
 
-pheno<-as.matrix(data_pheno)
-stab.glmnet <- stabsel(x=pheno[,-1], y=pheno[,1] ,
-                       fitfun = glmnet.lasso,
-                       args.fitfun = list(alpha=1),
-                       cutoff = 0.75, PFER =1, B=100)
+K.opt.ebic.ll <- which.min(fit.seqll$EBIC)
+K.opt.ebic.rr <- which.min(fit.seqrr$EBIC)
+K.opt.ebic.lav <- which.min(fit.seqlav$EBIC)
 
-pheno_long<-as.data.frame(stab.glmnet$selected) # repeat for PDSRrr
-pheno_radial<-as.data.frame(stab.glmnet$selected) # repeat for LAVmaxi
-pheno_lav<-as.data.frame(stab.glmnet$selected) # bind all the variables selected from the stabsel
-pheno_all<-rbind(pheno_long,pheno_radial,pheno_lav)
+K.opt.ebic.ll
+K.opt.ebic.rr
+K.opt.ebic.lav
+
+# PDSRll
+fit.one.ll <- bess.one(data_ebic[,-18], data_ebic[,18], s = K.opt.ebic.ll, family = "gaussian")
+bm.one.ll <- fit.one.ll$bestmodel
+#PDSRrr
+fit.one.rr <- bess.one(data_ebic[,-19], data_ebic[,19], s = K.opt.ebic.rr, family = "gaussian")
+bm.one.rr <- fit.one.rr$bestmodel
+#LAVmaxi
+fit.one.lav <- bess.one(data_ebic[,-34], data_ebic[,34], s = K.opt.ebic.lav, family = "gaussian")
+bm.one.lav <- fit.one.lav$bestmodel
+
+pheno_long<-names(bm.one.ll$coefficients)[-1]
+pheno_radial<-names(bm.one.rr$coefficients)[-1]
+pheno_lav<-names(bm.one.lav$coefficients)[-1]
+pheno_all<-cbind(pheno_long,pheno_radial,pheno_lav)
 
 pos_pheno<-match(rownames(pheno_all),colnames(pheno)) # order the position of variables selected
 
 
-library(data.table)
 multivar_data <- read.table("multivar_datatable.txt", header = TRUE) # load the whole dataset
 multivar_data_train <- read.table("multivar_train_datatable.txt", header = TRUE) # load the training dataset
 multivar_data_test <- read.table("multivar_test_datatable.txt", header = TRUE) # load the test dataset
@@ -69,15 +89,11 @@ position_stab<-rbind(covar,pos_pheno)
 
 ## Final check for collinearity using the selected variables
 
-install.packages("mctest")
-
 model<-lm(`PDSRll (s-1)`~., data=as.data.frame(multivar_data[,position_stab[,1]]))
-library(mctest)
 imcdiag(model,method="VIF", vif=5) # 0 if collinearity is not detected by this test
 
 # Apply LASSO regression
 
-library(glmnet)  
 
 # cv.glmnet to train for the lambda parameter
 data.train<-as.matrix(multivar_data_train[,position_stab[,1]])
@@ -85,7 +101,7 @@ data.train<-na.omit(data.train)
 colnames(data.train)
 lambda_min<-matrix(0,ncol = 1, nrow = ncol(data.train))
 for (iT in 1:ncol(data.train)){
-  if (iT==2|iT==7){ # for the logistic regression
+  if (iT==2){ # for the logistic regression
     cv<-cv.glmnet(data.train[,-iT],data.train[,iT],nfolds = 10, family="binomial", alpha=1)$lambda.min
   } else {
     cv<-cv.glmnet(data.train[,-iT],data.train[,iT],nfolds = 10, alpha=1)$lambda.min
@@ -93,12 +109,12 @@ for (iT in 1:ncol(data.train)){
   lambda_min[iT]<-round(cv,5)
 }
 
-# glmnet 
+# glmnet test
 data_selected<-as.matrix(multivar_data_test[,position_stab[,1]])
 data_selected<-na.omit(data_selected)
 beta_gl<-matrix(0,ncol = ncol(data_selected), nrow = ncol(data_selected)-1)
 for (iS in 1:ncol(data_selected)){
-  if (iS==2|iS==7){ # for the logistic regression
+  if (iS==2){ # for the logistic regression
     cv<-glmnet(data_selected[,-iS],data_selected[,iS], family="binomial", lambda = lambda_min[iS], alpha=1)
     beta<-as.vector(t(coef(cv)))
     beta<-as.matrix(beta[-1])

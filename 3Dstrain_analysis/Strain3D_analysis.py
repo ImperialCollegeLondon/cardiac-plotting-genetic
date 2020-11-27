@@ -37,13 +37,6 @@ def unitvar(x, y, z):
        coord = [u, v, w]
        return coord
 
-def jacobi(a,b):
-       a = a.T
-       b = b.T
-       X = np.dot(b,b.T)
-       X = np.linalg.pinv(X, rcond = 1e-21)
-       J = np.dot(a,np.dot(b.T,X))
-       return J
 
 # Strain computation
 def etens(m_cyl):
@@ -66,7 +59,7 @@ def etens(m_cyl):
               return lambdabind
        l1 = l1l2(m_cyl[:,:2], m_cyl[:,3:5]) # Calculate the eigenvalues of the 2D deformation (x,y) in the principal direction
        E_L = 0.5*((np.dot(FF.T,FF))-ident) # Lagrangian strain
-       E_E = 0.5*(ident-(np.dot(np.linalg.pinv(FF.T),np.linalg.pinv(FF))))
+       E_E = 0.5*(ident-(np.dot(np.linalg.pinv(FF.T),np.linalg.pinv(FF))))# Eulerian strain
        E_L[0,0] = ((1/(l1[0]*l1[1]))-(1/(l1[2]*l1[3])))*0.5 # Correct radial principal strain
        E_L = E_L.flatten()
        E_E = E_E.flatten()
@@ -153,11 +146,6 @@ for iP in range(0,10):
               # Get only the surface with the cartesian coordinates
               attach_ed = EDepi_data
               attach_es = ESepi_data
-              #attach_str_new = np.zeros((len(EDepi_data[:,0]),len(attach_str[0,:])))
-              #for iN in range(0,len(attach_str[0,:])):
-              #kde = gaussian_kde(attach_str[:,0], bw_method=0.2)
-              #attach_str_n = kde.evaluate(nPoints)
-              #       continue
               neopheno = np.concatenate([ED_epi, ES_epi, attach_ed, attach_es, attach_str], axis=1)
               neopheno = pd.DataFrame(neopheno)
               neopheno.columns = ["EDx", "EDy", "EDz","ESx", "ESy", "ESz","EDcx", "EDcy", "EDcz","EScx", "EScy", "EScz",

@@ -7,7 +7,7 @@
 #install.packages("shiny")
 #install.packages('shinyFiles')
 #library(shinyFiles)
-#setwd("~/cardiac/Experiments_of_Maria/20191024_ShinyApp/")
+#setwd("~/cardiac/Experiments_of_Maria/ShinyApp/")
 library(remotes)
 # remotes::install_github("rstudio/d3heatmap", force=TRUE)
 library(shiny)

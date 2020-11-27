@@ -16,7 +16,7 @@ registerDoParallel(detectCores())
 #contain in the first column the BRU numbers of the subjects and in the other columns the clinical covariates you want to study.
 
 #SET THE PATH OF THE WORKING DIRECTORY
-setwd("~/cardiac/Experiments_of_Maria/Mass_univariate_analysis/")
+setwd("~/cardiac/Experiments_of_Maria/HCM_expressivity/Github_codes/cardiac-plotting-genetic/HCM_expressivity_analysis")
 
 #SET THE PATH OF THE FILE CONTAINING THE CLINICAL DATA OF THE PATIENTS FOR ALL THE MODELS
 fileClinicalDataPath <- c("~/cardiac/DL_segmentation/IHD_Richard/IHD_Cohort/IHD_databases/IHDtestbatch.csv")

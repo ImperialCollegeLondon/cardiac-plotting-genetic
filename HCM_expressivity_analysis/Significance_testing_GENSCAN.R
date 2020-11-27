@@ -2,7 +2,7 @@
 rm(list = ls(all = TRUE))  
 #start with an empty environment
 
-setwd("~/cardiac/Experiments_of_Maria/HCM_expressivity/Github_codes/cardiac-plotting-genetic/HCM_expressivity_analysis/")
+setwd("~/cardiac/DL_segmentation/3D_HCM_2020_Experiments/Mass_univariate_analysis_GenScan/")
 library(data.table)
 library(multtest)
 library(mutools3D)
@@ -10,7 +10,7 @@ library(Rcpp) # required in permFL_fast
 library(RcppArmadillo) # required in mulitply.cpp
 library(RcppEigen) # required in mulitply.cpp
 library(float) # required in permFL_fast
-func.dir<-"~/cardiac/Experiments_of_Maria/HCM_expressivity/Github_codes/cardiac-plotting-genetic/HCM_expressivity_analysis/"
+func.dir<-"~/cardiac/DL_segmentation/3D_HCM_2020_Experiments/Mass_univariate_analysis_GenScan/"
 # folder directory of the code. Will be used for the functions as: source(paste(dir,"functions/TFCE.R", sep="/")) in the permFL function.
 source("functions/TFCE.R")
 #include the functions for TFCE

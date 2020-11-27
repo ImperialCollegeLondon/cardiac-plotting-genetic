@@ -28,13 +28,6 @@ def unitvar(x, y, z):
        coord = [u, v, w]
        return coord
 
-def jacobi(a,b):
-       a = a.T
-       b = b.T
-       X = np.dot(b,b.T)
-       X = np.linalg.pinv(X, rcond = 1e-21)
-       J = np.dot(a,np.dot(b.T,X))
-       return J
        
 path_data    = "/mnt/storage/home/mthanaj/cardiac/UKBB_40616/UKBB_test/4DSegment2.0_test_motion_final"
 folder = os.listdir(path_data)
@@ -81,18 +74,6 @@ for iP in range(0,1):
                      ED_datan[iE,:] = array(cart2cylc(ED_data.iloc[iE,0],ED_data.iloc[iE,1],ED_data.iloc[iE,2]))
                      ES_datan[iE,:] = array(cart2cylc(ES_data.iloc[iE,0],ES_data.iloc[iE,1],ES_data.iloc[iE,2]))
                      continue
-              
-              X = np.array(ED_data)
-              Y = np.array(ED_datan)
-              print(X)
-              print(np.array(ED_datan))
-              J = jacobi(np.array(ED_data),np.array(ED_datan))
-              print(J)
-              g = J.T*np.eye(3)
-              print(g)
-              ds = np.dot(g,Y.T)
-              print(ds)
-              
               ED_epi = ED_datan[0:(len(EDepi_data[:,0])),:]
               ED_endo = ED_datan[(len(EDepi_data[:,0])):(len(ED_data.iloc[:,0])),:]
               ES_epi = ES_datan[0:(len(ESepi_data[:,0])),:]
@@ -149,7 +130,7 @@ for iP in range(0,1):
               X61 = X61.reshape(-1,1)
               nbrs61 = NearestNeighbors(n_neighbors=sc_1, algorithm='auto').fit(X61)
               distances_esd3, con_esd3 = nbrs61.kneighbors(X61)
-              # Step 4 - Compute strain
+              # Step 4 - Compute radial, circumferential and longitudinal strain
               Srepi = (np.sum(distances_es, axis=1)-np.sum(distances_ed, axis=1))/np.sum(distances_ed, axis=1)
               Srendo = (np.sum(distances_esd, axis=1)-np.sum(distances_edd, axis=1))/np.sum(distances_edd, axis=1)
               Scepi = (np.sum(distances_es2, axis=1)-np.sum(distances_ed2, axis=1))/np.sum(distances_ed2, axis=1)

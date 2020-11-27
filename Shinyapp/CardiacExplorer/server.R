@@ -5,7 +5,7 @@
 #rm(list = ls(all = TRUE))  
 #start with an empty environment
 #install.packages("shiny")
-# setwd("Z:/Experiments_of_Maria/20191024_ShinyApp/")
+# setwd("Z:/Experiments_of_Maria/ShinyApp/")
 library(remotes)
 #remotes::install_github("rstudio/d3heatmap", force=TRUE)
 library(shiny)
