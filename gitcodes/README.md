@@ -14,7 +14,7 @@
 
 * Mass_univariate_analyis.py - Mass univariate analyis for associations between WT or S2S and nonimaging phenotypes in python.
 
-* create_synthetic - create synthetic data for the HCM paper.
+* create_synthetic.R - create synthetic data for the HCM paper.
 
 * 3Dplot.R - Plot the 3D LV mesh with the beta coefficient.Require orca installation from the following link:
 
