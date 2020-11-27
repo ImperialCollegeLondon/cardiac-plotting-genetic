@@ -1,25 +1,40 @@
 # Cardiac Phenotype associations Pipeline
 
-## Multivariable analysis using LASSO models with stability selection for selecting the imaging phenotypes
-### Stability selection procedure using 'stabsel'
+## Multivariable analysis using LASSO models with model selection for selecting the imaging phenotypes
+### Model selection procedure using 'BeSS'
 
+    library(BeSS)
     # load non-imaging phenotype data
-    pheno<-as.matrix(data_pheno)
-    library(stabs)
-    # for PDSRll (s-1)
-    library(stabs)
+    data_ebic<-as.matrix(data_pheno)
 
-    stab.glmnet <- stabsel(x=pheno[,-1], y=pheno[,1] ,
-                          fitfun = glmnet.lasso,
-                          args.fitfun = list(alpha=1),
-                          cutoff = 0.75, PFER =1, B=100)
+    # using GPDAS algorithm to select the optimal k
+    # PDSRll
+    fit.seqll <- bess(data_ebic[,-18], data_ebic[,18], method="sequential", epsilon = 0)
+    # PDSRrr
+    fit.seqrr <- bess(data_ebic[,-19], data_ebic[,19], method="sequential", epsilon = 0)
+    # LAVmaxi
+    fit.seqlav <- bess(data_ebic[,-34], data_ebic[,34], method="sequential", epsilon = 0)
 
-    pheno_long<-as.data.frame(stab.glmnet$selected) # repeat for PDSRrr
-    pheno_radial<-as.data.frame(stab.glmnet$selected) # repeat for LAVmaxi
-    pheno_lav<-as.data.frame(stab.glmnet$selected) # bind all the variables selected from the stabsel
-    pheno_all<-rbind(pheno_long,pheno_radial,pheno_lav)
+    K.opt.ebic.ll <- which.min(fit.seqll$EBIC)
+    K.opt.ebic.rr <- which.min(fit.seqrr$EBIC)
+    K.opt.ebic.lav <- which.min(fit.seqlav$EBIC)
 
-    pos_pheno<-match(rownames(pheno_all),colnames(pheno)) # order the position of variables selected
+    # PDSRll
+    fit.one.ll <- bess.one(data_ebic[,-18], data_ebic[,18], s = K.opt.ebic.ll, family = "gaussian")
+    bm.one.ll <- fit.one.ll$bestmodel
+    #PDSRrr
+    fit.one.rr <- bess.one(data_ebic[,-19], data_ebic[,19], s = K.opt.ebic.rr, family = "gaussian")
+    bm.one.rr <- fit.one.rr$bestmodel
+    #LAVmaxi
+    fit.one.lav <- bess.one(data_ebic[,-34], data_ebic[,34], s = K.opt.ebic.lav, family = "gaussian")
+    bm.one.lav <- fit.one.lav$bestmodel
+
+    pheno_long<-names(bm.one.ll$coefficients)[-1]
+    pheno_radial<-names(bm.one.rr$coefficients)[-1]
+    pheno_lav<-names(bm.one.lav$coefficients)[-1]
+    pheno_all<-cbind(pheno_long,pheno_radial,pheno_lav)
+
+    pos_pheno<-match(rownames(pheno_all),colnames(data_ebic)) # order the position of variables selected
 
  ### LASSO models using 'glmnet'. The parameter of lambda.min was tuned by a 10-fold cross-validation method using 'cv.glmnet' on a training set (~67% of the original dataset).
 
@@ -45,30 +60,25 @@
      VIF Multicollinearity Diagnostics
 
                                  VIF detection
-     Age                      1.9780         0
-     Sex                      1.6394         0
-     SBP                      1.3519         0
-     `Pulse rate`             1.6454         0
-     Diabetes                 1.1216         0
-     Smoking                  1.0122         0
-     `Duration of activity`   1.0114         0
-     `Medication (n)`         1.1984         0
-     `Assessment centre`      1.0688         0
-     `C-reactive protein`     1.1589         0
-     Cholesterol              1.2081         0
-     Triglycerides            1.4019         0
-     `eGFR cystatin`          1.4250         0
-     PDSRrr                   2.1422         0
-     `Err Global`             2.0268         0
-     `Ell Global`             1.4646         0
-     `AAo distensibility`     2.8909         0
-     `DAo distensibility`     2.8495         0
-     LVSVi                    4.5815         0
-     LVCI                     2.9617         0
-     LAVmaxi                  4.4977         0
-     LAVmini                  4.0171         0
-     RVSVi                    2.7339         0
-     RAVmini                  1.5510         0
+     Age                   1.8402         0
+     Sex                   1.5714         0
+     SBP                   1.3195         0
+     `Pulse rate`          1.6389         0
+     `Medication (n)`      1.0986         0
+     `Assessment centre`   1.0703         0
+     Triglycerides         1.1870         0
+     `eGFR creatine`       1.2526         0
+     PDSRrr                2.1449         0
+     `Err Global`          2.0369         0
+     `Ell Global`          1.4633         0
+     `AAo distensibility`  3.2468         0
+     `DAo distensibility`  3.2047         0
+     LVSVi                 4.5634         0
+     LVCI                  2.9768         0
+     LAVmaxi               4.7016         0
+     LAVmini               3.3255         0
+     RVSVi                 2.6815         0
+     RAEF                  1.5739         0
 
      NOTE:  VIF Method Failed to detect multicollinearity
 

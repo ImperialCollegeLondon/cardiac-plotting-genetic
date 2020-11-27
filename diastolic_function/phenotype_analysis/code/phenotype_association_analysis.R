@@ -55,10 +55,6 @@ K.opt.ebic.ll <- which.min(fit.seqll$EBIC)
 K.opt.ebic.rr <- which.min(fit.seqrr$EBIC)
 K.opt.ebic.lav <- which.min(fit.seqlav$EBIC)
 
-K.opt.ebic.ll
-K.opt.ebic.rr
-K.opt.ebic.lav
-
 # PDSRll
 fit.one.ll <- bess.one(data_ebic[,-18], data_ebic[,18], s = K.opt.ebic.ll, family = "gaussian")
 bm.one.ll <- fit.one.ll$bestmodel
@@ -74,7 +70,7 @@ pheno_radial<-names(bm.one.rr$coefficients)[-1]
 pheno_lav<-names(bm.one.lav$coefficients)[-1]
 pheno_all<-cbind(pheno_long,pheno_radial,pheno_lav)
 
-pos_pheno<-match(rownames(pheno_all),colnames(pheno)) # order the position of variables selected
+pos_pheno<-match(rownames(pheno_all),colnames(data_ebic)) # order the position of variables selected
 
 
 multivar_data <- read.table("multivar_datatable.txt", header = TRUE) # load the whole dataset

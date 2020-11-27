@@ -28,4 +28,4 @@ Mass univariate analysis for the Shiny app.
 Various codes for plotting and converting.  
 
 
-Information regarding paths of data and functions can be found in [wiki](https://github.com/ImperialCollegeLondon/cardiac-plotting-genetic/wiki)
+Information regarding paths of data and functions can be found in [wiki pages](https://github.com/ImperialCollegeLondon/cardiac-plotting-genetic/wiki)
