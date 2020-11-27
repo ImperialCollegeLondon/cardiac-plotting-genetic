@@ -23,6 +23,6 @@ A 3D computational modelling of left ventricular geometry in the UK Biobank part
 left ventricle on which standardised beta coefficients are calculated and mapped to show the strength of associations between genotype status and wall thickness
 adjusted for age, gender, race, body surface area, systolic blood pressure and diastolic blood pressure. The models can be plotted with the shinyApp.  
 
-Functions and data can be found in /cardiac drive (/cardiac/Experiments_of_Maria
+Information regarding functions and data can be found in wiki.
 
 The code has been fully documented and descriptions are available within.
