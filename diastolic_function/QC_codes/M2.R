@@ -13,7 +13,7 @@ M2_removal <- function(trait) {
   sort.trait <- sort(trait)
   order.trait <- order(trait)
   
-  for (i in 1:length(trait)) { 
+  for (i in 1:length(trait)) { ##?? modify??
     bounds <- c(sort.trait[i]-0.5*mad, sort.trait[i]+0.5*mad)
     neigh <- sum((bounds[1] < trait) & (bounds[2] > trait), na.rm=TRUE)
     count <- count + 1
