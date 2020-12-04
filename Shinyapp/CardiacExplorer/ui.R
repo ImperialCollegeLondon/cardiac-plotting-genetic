@@ -5,11 +5,18 @@
 # rm(list = ls(all = TRUE))
 #start with an empty environment
 #install.packages("shiny")
-#install.packages('shinyFiles')
-#library(shinyFiles)
-#setwd("~/cardiac/Experiments_of_Maria/ShinyApp/")
-library(remotes)
+# install.packages("plotly")
+# install.packages("data.table")
+# install.packages("dplyr")
+# install.packages("remotes")
+# library(remotes)
 # remotes::install_github("rstudio/d3heatmap", force=TRUE)
+# install.packages("plotly")
+# install.packages("visNetwork")
+# install.packages("igraph")
+# install all packages required
+
+#setwd("~/cardiac/Experiments_of_Maria/ShinyApp/")
 library(shiny)
 library(plotly)
 library(data.table)
@@ -17,6 +24,7 @@ library(dplyr)
 library(d3heatmap)
 library(visNetwork)
 library(igraph)
+
 data_all<-read.csv("2D/2d_association_lasso.csv")
 data_all<-data_all[,-1]
 colnames(data_all)[c(21:23,17:19,30)]<-c("Blood_pressure_medication","Cholesterol_medication", "Insulin_medication","Duration_of_moderate_activity (min/day)", 
@@ -111,6 +119,7 @@ fluidPage(
                                                                     selected="Longitudinal_PDSR (s-1)"),
                                                         helpText("Adjusted for age, sex, race, body surface area and 
                                                                  systolic blood pressure."),
+                                                        helpText("Place cursor on the phenotypes to view the regression coefficients."),
                                                         visNetworkOutput("network",height="600px", width="100%")))
                                            ))
                       ), 

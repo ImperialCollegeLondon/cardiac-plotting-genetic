@@ -4,10 +4,20 @@
 ######################################################
 #rm(list = ls(all = TRUE))  
 #start with an empty environment
-#install.packages("shiny")
-# setwd("Z:/Experiments_of_Maria/ShinyApp/")
-library(remotes)
-#remotes::install_github("rstudio/d3heatmap", force=TRUE)
+
+# install.packages("shiny")
+# install.packages("plotly")
+# install.packages("data.table")
+# install.packages("dplyr")
+# install.packages("remotes")
+# library(remotes)
+# remotes::install_github("rstudio/d3heatmap", force=TRUE)
+# install.packages("plotly")
+# install.packages("visNetwork")
+# install.packages("igraph")
+# install all packages required
+
+#setwd("~/cardiac/Experiments_of_Maria/ShinyApp/")
 library(shiny)
 library(plotly)
 library(data.table)
@@ -124,19 +134,19 @@ function(input, output,session) {
         edges$value<-val
         
         edges$color<- "#6DAC4FFF"
-        p2<-which(edges$from==50)
+        p2<-which(edges$from==47)
         edges$color[p2[1]:nrow(edges)]<-"#FF7070"
         edges$length<-800
         title_from<-colnames(data_all)[edges$from]
         title_to<-colnames(data_all)[edges$to]
         edges$title<-paste(title_from, "~", title_to,":",round(value,3))
         edges$label<-round(value,3)
-        cl<-matrix("Non-imaging Phenotypes",nrow=1, ncol =49)
-        Ph<-matrix("Imaging Phenotypes", nrow = 1, ncol = 84)
+        cl<-matrix("Non-imaging Phenotypes",nrow=1, ncol =46)
+        Ph<-matrix("Imaging Phenotypes", nrow = 1, ncol = 85)
         group <-as.character(cbind(cl,Ph))
         nodes$group<-group
-        col1<-matrix("#6DAC4FFF",nrow=1, ncol = 49)
-        col2<-matrix("#FF7070",nrow=1, ncol = 84)
+        col1<-matrix("#6DAC4FFF",nrow=1, ncol = 46)
+        col2<-matrix("#FF7070",nrow=1, ncol = 85)
         color<-as.character(cbind(col1,col2))
         nodes$color<-color
         nodes$font.size<-35

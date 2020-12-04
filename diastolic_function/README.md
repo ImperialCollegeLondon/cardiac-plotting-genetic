@@ -16,6 +16,8 @@ Cardiac phenotype pipeline to investigate the relationships between the myocardi
 * [Plots](https://github.com/ImperialCollegeLondon/diastolic_genetics/tree/master/plots)  
 Scatter and box plots of diastolic function.
 
+* Phenotype anaysis
+Includes all the quality controlof the quantitative phenotypes mentioned in the paper.
 
 ## Meta
 
