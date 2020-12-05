@@ -26,3 +26,5 @@ adjusted for age, gender, race, body surface area, systolic blood pressure and d
 Information regarding functions and data can be found in wiki.
 
 The code has been fully documented and descriptions are available within.
+
+Information regarding paths of data and functions can be found in [wiki pages](https://github.com/ImperialCollegeLondon/cardiac-plotting-genetic/wiki/ShinyApp)

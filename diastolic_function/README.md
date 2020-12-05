@@ -10,10 +10,10 @@ Left ventricular diastolic function is a key determinant of ventricular pressure
 
 The repository is composed of different sections 
  
-* [Phenotype anaysis](https://github.com/ImperialCollegeLondon/diastolic_genetics/tree/master/phenotype_analysis)   
+* Phenotype anaysis   
 Cardiac phenotype pipeline to investigate the relationships between the myocardial diastolic function parameters and the non-imaging clinical data.
 
-* [Plots](https://github.com/ImperialCollegeLondon/diastolic_genetics/tree/master/plots)  
+* Plots 
 Scatter and box plots of diastolic function.
 
 * Phenotype anaysis
@@ -22,4 +22,6 @@ Includes all the quality controlof the quantitative phenotypes mentioned in the 
 ## Meta
 
 Distributed under the GNU GENERAL PUBLIC LICENSE license. See ``LICENSE`` for more information.
+
+Information regarding paths of data and functions can be found in [wiki pages](https://github.com/ImperialCollegeLondon/cardiac-plotting-genetic/wiki/Diastolic-function)
 
