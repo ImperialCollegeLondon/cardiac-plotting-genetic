@@ -98,7 +98,7 @@ for (iP in 1:length(pheno_all_M2)){pos_pheno_M2[iP]<-grep(pheno_all_M2[iP],pheno
 
 pheno<-as.matrix(na.omit(data_pheno))
 stab.glmnet_ll <- stabsel(x=pheno[,-111], y=pheno[,111] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
-stab.glmnet_rr <- stabsel(x=pheno[,-112], y=pheno[,112] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 1.1, PFER =1, B=100)
+stab.glmnet_rr <- stabsel(x=pheno[,-112], y=pheno[,112] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
 stab.glmnet_lav <- stabsel(x=pheno[,-127], y=pheno[,127] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
 
 
@@ -112,9 +112,9 @@ pheno_all_M3<-unique(pheno_all_M3)
 # [5] "Triglycerides"           "PDSRrr"                 "Ecc.Global"             "Err.Global"            
 # [9] "Ell.Global"              "AAo.distensibility"     "AAo.min.area"           "DAo.min.area"          
 # [13] "LVSVi"                  "LAVmaxi"                "LAVmini"                "LVCI"                  
-# [17] "RAVmini"                "RAEF"                   "Assessment_centre"      "Sex"
-# [21] "C_reactive_protein_log" "PDSRll"                 "DAo.distensibility"     "LVMi"                  
-# [25] "RVEDVi"                 "RVSVi"                  "LASVi"                 
+# [17] "RAVmini"                "Sex"                    "Assessment_centre"      "C_reactive_protein_log" 
+# [21] "PDSRll"                 "DAo.distensibility"     "LVMi"                   "RVEDVi"  
+# [25] "RVSVi"                  "LASVi"                 
 
 phenonames<-colnames(pheno)
 pos_pheno_M3<-0
@@ -133,7 +133,7 @@ multivar_data <- read.table("multivar_datatable.txt", header = TRUE) # load the 
 multivar_data<-na.omit(multivar_data[,c(pos_pheno_M3)])
 model<-lm(`PDSRll`~., data=as.data.frame(multivar_data))
 car::vif(model)
-multivar_data_vif<-multivar_data[,-c(4,11,16,17,19,22,24,27)] # exclude variables with VIF > 5 and include one phenotype of each
+multivar_data_vif<-multivar_data[,-c(4,11,16,17,19,22,24)] # exclude variables with VIF > 5 and include one phenotype of each
 # of the four cardiac chambers (LV, LA, RV, RA), one of the relevant strains (Err, Ell) and two aortic sections (AAo, DAo) where possible to avoid collinearity.
 
 model_vif<-lm(`LAVmaxi`~., data=as.data.frame(multivar_data_vif))
