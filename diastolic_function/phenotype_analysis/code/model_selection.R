@@ -19,11 +19,12 @@ library(mctest)
 
 ### Multivariate LASSO regresion analysis with model  selection for selecting the non-imaging phenotypes 
 
+data_pheno <- read.table("phenotypes_all.txt", header = TRUE)# load all 110 non-imaging and 31 imaging phenotype data
+
 # Method 1 - Best subset selection approach with "beSS"
 # using GPDAS algorithm to select the optimal subset selection k and the best model is determined by Extended Bayesian Information Criterion (EBIC)
 
-data_pheno <- read.table("Phenotypes_40k.txt", header = TRUE)# load only imaging phenotype data
-pheno<-as.matrix(na.omit(data_pheno))
+pheno<-as.matrix(na.omit(data_pheno[,-c(1:2)])) # exclude the IDs
 
 # PDSRll
 fit.seqll <- bess(pheno[,-111], pheno[,111], method="sequential", epsilon = 0)
@@ -54,13 +55,7 @@ pheno_all_M1<-(unique(pheno_all_M1))
 phenonames<-colnames(pheno)
 pheno_all_M1<-substring(pheno_all_M1,6) # exclude "xbest"
 # pheno_all_M1 all variables selected
-# [1] "Age"                    "Sex"                    "SBP"                    "Triglycerides"         
-# [5] "PDSRrr"                 "Ecc.Global"             "Err.Global"             "Ell.Global"            
-# [9] "AAo.distensibility"     "AAo.min.area"           "DAo.min.area"           "LVSVi"                 
-# [13] "LAVmaxi"                "LASVi"                  "LVCI"                   "RAEF"                  
-# [17] "Pulse_rate"             "Assessment_centre"      "C_reactive_protein_log" "PDSRll"                
-# [21] "WT.Global"              "LVEF"                   "RVSVi"                  "RVEF"                  
-# [25] "LAVmini"                        
+
 pos_pheno_M1<-0
 for (iP in 1:length(pheno_all_M1)){pos_pheno_M1[iP]<-grep(pheno_all_M1[iP],phenonames)} # position in the pheno of variables selected
 
@@ -69,7 +64,7 @@ for (iP in 1:length(pheno_all_M1)){pos_pheno_M1[iP]<-grep(pheno_all_M1[iP],pheno
 # the graphical model was thresholded, the tuning parameter for EBIC was set to 0.5 and only the non-zero 
 # associations between the three diastolic function parameters and all other covariates were selected as covariates.
 
-pheno<-as.matrix(na.omit(data_pheno))
+pheno<-as.matrix(na.omit(data_pheno[,-c(1:2)])) # exclude the IDs
 net_thresh <- bootnet_EBICglasso(pheno,
                                  tuning = 0.5, # EBICglasso sets tuning to 0.5
                                  threshold = T,unlock=T)
@@ -83,10 +78,7 @@ pheno_lav<-names(net[-nlav,127]) # LAVmaxi
 pheno_all_M2<-c(pheno_long,pheno_radial,pheno_lav) # bind all the variables selected from the EBICglasso
 pheno_all_M2<-(unique(pheno_all_M2))
 # pheno_all_M2
-# [1] "Age"          "DBP"          "PDSRrr"       "Ecc.Global"   "Err.Global"   "Ell.Global"   "AAo.max.area"
-# [8] "AAo.min.area" "DAo.max.area" "DAo.min.area" "LVSVi"        "LAVmaxi"      "LVCI"         "LAEF"        
-# [15] "Pulse_rate"   "PDSRll"       "LVMi"         "LASVi"        "RVEDVi"       "RVSVi"        "Sex"         
-# [22] "BSA"          "Height"       "LVEDVi"       "LVESVi"       "LAVmini"     
+
 phenonames<-colnames(pheno)
 pos_pheno_M2<-0
 for (iP in 1:length(pheno_all_M2)){pos_pheno_M2[iP]<-grep(pheno_all_M2[iP],phenonames)} # position in the pheno of variables selected
@@ -96,7 +88,8 @@ for (iP in 1:length(pheno_all_M2)){pos_pheno_M2[iP]<-grep(pheno_all_M2[iP],pheno
 # "cutoff" was set to 0.95 allowing more variables to be included in the model, the per-family error rate was 
 # set to 1.0 and the "fitfun" parameter was set as "glmnet.lasso"
 
-pheno<-as.matrix(na.omit(data_pheno))
+pheno<-as.matrix(na.omit(data_pheno[,-c(1:2)])) # exclude the IDs
+
 stab.glmnet_ll <- stabsel(x=pheno[,-111], y=pheno[,111] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
 stab.glmnet_rr <- stabsel(x=pheno[,-112], y=pheno[,112] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
 stab.glmnet_lav <- stabsel(x=pheno[,-127], y=pheno[,127] ,fitfun = glmnet.lasso, args.fitfun = list(alpha=1), cutoff = 0.95, PFER =1, B=100)
@@ -106,15 +99,8 @@ pheno_long<-(stab.glmnet_ll$selected) # for PDSRll
 pheno_radial<-(stab.glmnet_rr$selected) # PDSRrr
 pheno_lav<-(stab.glmnet_lav$selected) # LAVmaxi
 pheno_all_M3<-c(names(pheno_long),names(pheno_radial),names(pheno_lav)) # bind all the variables selected from the stabsel
-pheno_all_M3<-unique(pheno_all_M3)
-# pheno_all_M3
-# [1] "Age"                     "SBP"                    "DBP"                    "Pulse_rate"            
-# [5] "Triglycerides"           "PDSRrr"                 "Ecc.Global"             "Err.Global"            
-# [9] "Ell.Global"              "AAo.distensibility"     "AAo.min.area"           "DAo.min.area"          
-# [13] "LVSVi"                  "LAVmaxi"                "LAVmini"                "LVCI"                  
-# [17] "RAVmini"                "Sex"                    "Assessment_centre"      "C_reactive_protein_log" 
-# [21] "PDSRll"                 "DAo.distensibility"     "LVMi"                   "RVEDVi"  
-# [25] "RVSVi"                  "LASVi"                 
+pheno_all_M<-unique(pheno_all_M)
+pheno_all_M3
 
 phenonames<-colnames(pheno)
 pos_pheno_M3<-0
